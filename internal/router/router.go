@@ -9,23 +9,28 @@ import (
 
 	"starter-kit/infrastructure/database"
 	menuHandler "starter-kit/internal/handlers/http/menu"
+	otpHandler "starter-kit/internal/handlers/http/otp"
 	permissionHandler "starter-kit/internal/handlers/http/permission"
 	roleHandler "starter-kit/internal/handlers/http/role"
 	sessionHandler "starter-kit/internal/handlers/http/session"
 	userHandler "starter-kit/internal/handlers/http/user"
 	authRepo "starter-kit/internal/repositories/auth"
 	menuRepo "starter-kit/internal/repositories/menu"
+	otpRepo "starter-kit/internal/repositories/otp"
 	permissionRepo "starter-kit/internal/repositories/permission"
 	roleRepo "starter-kit/internal/repositories/role"
 	sessionRepo "starter-kit/internal/repositories/session"
 	userRepo "starter-kit/internal/repositories/user"
 	menuSvc "starter-kit/internal/services/menu"
+	otpSvc "starter-kit/internal/services/otp"
 	permissionSvc "starter-kit/internal/services/permission"
 	roleSvc "starter-kit/internal/services/role"
 	sessionSvc "starter-kit/internal/services/session"
 	userSvc "starter-kit/internal/services/user"
 	"starter-kit/middlewares"
+	"starter-kit/pkg/config"
 	"starter-kit/pkg/logger"
+	"starter-kit/pkg/mailer"
 	"starter-kit/pkg/security"
 	"starter-kit/utils"
 )
@@ -187,6 +192,29 @@ func (r *Routes) MenuRoutes() {
 		menu.GET("/:id", mdw.PermissionMiddleware("menus", "view"), h.GetByID)
 		menu.PUT("/:id", mdw.PermissionMiddleware("menus", "update"), h.Update)
 		menu.DELETE("/:id", mdw.PermissionMiddleware("menus", "delete"), h.Delete)
+	}
+}
+
+func (r *Routes) OTPRoutes() {
+	redisClient := database.GetRedisClient()
+	if redisClient == nil {
+		logger.WriteLog(logger.LogLevelWarn, "Redis not available, OTP routes will not be registered")
+		return
+	}
+
+	sender, err := mailer.NewBrevoSenderFromEnv()
+	if err != nil {
+		logger.WriteLog(logger.LogLevelError, "OTP sender not configured: "+err.Error())
+	}
+
+	repo := otpRepo.NewOTPRepository(redisClient)
+	svc := otpSvc.NewOTPService(repo, sender, config.LoadOTPConfig())
+	h := otpHandler.NewOTPHandler(svc)
+
+	otp := r.App.Group("/auth/register/otp")
+	{
+		otp.POST("/send", h.SendRegisterOTP)
+		otp.POST("/verify", h.VerifyRegisterOTP)
 	}
 }
 
