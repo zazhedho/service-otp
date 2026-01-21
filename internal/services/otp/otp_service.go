@@ -47,7 +47,7 @@ func NewOTPService(repo interfaceotp.RepoOTPInterface, sender mailer.Sender, cfg
 	}
 }
 
-func (s *ServiceOTP) SendRegisterOTP(ctx context.Context, email string) error {
+func (s *ServiceOTP) SendRegisterOTP(ctx context.Context, email, appName string) error {
 	if s == nil || s.Repo == nil || s.Sender == nil {
 		return ErrOTPNotConfigured
 	}
@@ -93,7 +93,7 @@ func (s *ServiceOTP) SendRegisterOTP(ctx context.Context, email string) error {
 		return fmt.Errorf("set cooldown: %w", err)
 	}
 
-	if err := s.Sender.SendOTP(normalizedEmail, code); err != nil {
+	if err := s.Sender.SendOTP(normalizedEmail, code, appName); err != nil {
 		_ = s.Repo.DeleteOTP(ctx, normalizedEmail)
 		_ = s.Repo.ResetAttempts(ctx, normalizedEmail)
 		_ = s.Repo.ClearCooldown(ctx, normalizedEmail)

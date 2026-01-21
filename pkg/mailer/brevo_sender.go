@@ -3,6 +3,7 @@ package mailer
 import (
 	"bytes"
 	"fmt"
+	"html"
 	"net/smtp"
 	"os"
 	"strconv"
@@ -49,9 +50,9 @@ func NewBrevoSenderFromEnv() (*BrevoSender, error) {
 		subject = "Your Registration OTP"
 	}
 
-	appName := os.Getenv("APP_NAME")
+	appName := os.Getenv("OTP_APP_NAME")
 	if appName == "" {
-		appName = "YourApp"
+		appName = "Account Verification"
 	}
 
 	ttl := parseDurationEnv([]string{"OTP_TTL"}, 5*time.Minute)
@@ -68,11 +69,14 @@ func NewBrevoSenderFromEnv() (*BrevoSender, error) {
 	}, nil
 }
 
-func (s *BrevoSender) SendOTP(to, code string) error {
+func (s *BrevoSender) SendOTP(to, code, appName string) error {
 	addr := fmt.Sprintf("%s:%d", s.Host, s.Port)
 	auth := smtp.PlainAuth("", s.User, s.Pass, s.Host)
 
-	msg := buildOTPMessage(s.From, to, s.Subject, s.AppName, code, s.TTL)
+	if strings.TrimSpace(appName) == "" {
+		appName = s.AppName
+	}
+	msg := buildOTPMessage(s.From, to, s.Subject, appName, code, s.TTL)
 
 	return smtp.SendMail(addr, auth, extractEmail(s.From), []string{to}, msg)
 }
@@ -83,59 +87,86 @@ func buildOTPMessage(from, to, subject, appName, code string, ttl time.Duration)
 		minutes = 5
 	}
 
+	safeAppName := html.EscapeString(appName)
+
 	textBody := fmt.Sprintf(
-		"Your registration OTP code is: %s\nThis code expires in %d minutes.\nIf you did not request this, please ignore this email.\n",
+		"Kode verifikasi pendaftaran kamu: %s\nKode ini akan kadaluarsa dalam %d menit.\nJika kamu tidak merasa mendaftar, abaikan email ini.\n",
 		code,
 		minutes,
 	)
-	htmlBody := fmt.Sprintf(`<!doctype html>
-<html>
+	htmlBody := fmt.Sprintf(`<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>%s OTP</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kode Verifikasi - %s</title>
 </head>
-<body style="margin:0;padding:0;background:#f6f7fb;">
-  <table role="presentation" cellpadding="0" cellspacing="0" width="100%%" style="background:#f6f7fb;padding:24px 0;">
-    <tr>
-      <td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
-          <tr>
-            <td style="padding:24px 32px;background:#0f172a;color:#ffffff;">
-              <div style="font-size:18px;font-weight:bold;">%s</div>
-              <div style="font-size:12px;opacity:.8;">Registration verification</div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:32px;color:#111827;">
-              <div style="font-size:16px;margin-bottom:12px;">Hi,</div>
-              <div style="font-size:14px;line-height:1.6;margin-bottom:18px;">
-                Use the OTP below to complete your registration. This code expires in <strong>%d minutes</strong>.
-              </div>
-              <div style="font-size:28px;letter-spacing:6px;font-weight:bold;background:#f3f4f6;padding:16px 20px;border-radius:10px;display:inline-block;">
-                %s
-              </div>
-              <div style="font-size:12px;color:#6b7280;margin-top:18px;">
-                If you did not request this, please ignore this email.
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:16px 32px;background:#f9fafb;color:#6b7280;font-size:11px;">
-              %s
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa;">
+  <div style="padding: 40px 20px; min-height: 100%%;">
+    <div style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+      
+      <div style="background-color: #1a1a2e; padding: 32px 24px; text-align: center;">
+        <h1 style="color: #ffffff; font-size: 24px; font-weight: 600; margin: 0; letter-spacing: 0.5px;">
+          %s
+        </h1>
+      </div>
+
+      <div style="padding: 40px 32px;">
+        <h2 style="color: #1a1a2e; font-size: 20px; font-weight: 600; margin: 0 0 16px 0;">
+          Verifikasi Akun Anda
+        </h2>
+
+        <p style="color: #4a5568; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+          Halo <strong>Pengguna</strong>,
+        </p>
+
+        <p style="color: #4a5568; font-size: 15px; line-height: 1.6; margin: 0 0 32px 0;">
+          Gunakan kode verifikasi berikut untuk menyelesaikan pendaftaran akun Anda:
+        </p>
+
+        <div style="background-color: #f7f7f9; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 32px; border: 1px dashed #e2e8f0;">
+          <p style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0;">
+            Kode Verifikasi
+          </p>
+          <p style="color: #1a1a2e; font-size: 36px; font-weight: 700; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
+            %s
+          </p>
+        </div>
+
+        <div style="background-color: #fff8e6; border-radius: 6px; padding: 12px 16px; margin-bottom: 24px; border-left: 3px solid #f6ad55;">
+          <p style="color: #744210; font-size: 13px; margin: 0; line-height: 1.5;">
+            ⏱️ Kode ini akan kadaluarsa dalam <strong>%d menit</strong>
+          </p>
+        </div>
+
+        <div style="background-color: #f0f9ff; border-radius: 6px; padding: 12px 16px; border-left: 3px solid #63b3ed;">
+          <p style="color: #2b6cb0; font-size: 13px; margin: 0; line-height: 1.5;">
+            🔒 Jangan bagikan kode ini kepada siapapun termasuk pihak yang mengaku dari %s.
+          </p>
+        </div>
+      </div>
+
+      <div style="background-color: #f8f9fa; padding: 24px 32px; border-top: 1px solid #e2e8f0;">
+        <p style="color: #a0aec0; font-size: 12px; text-align: center; margin: 0 0 8px 0; line-height: 1.5;">
+          Jika Anda tidak merasa mendaftar di %s, abaikan email ini.
+        </p>
+        <p style="color: #a0aec0; font-size: 12px; text-align: center; margin: 0;">
+          © %d %s. All rights reserved.
+        </p>
+      </div>
+
+    </div>
+  </div>
 </body>
 </html>`,
-		appName,
-		appName,
-		minutes,
+		safeAppName,
+		safeAppName,
 		code,
-		appName,
+		minutes,
+		safeAppName,
+		safeAppName,
+		time.Now().Year(),
+		safeAppName,
 	)
 
 	boundary := "otp-boundary"

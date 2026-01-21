@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -38,9 +39,13 @@ func (h *HandlerOTP) SendRegisterOTP(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
-	logger.WriteLogWithContext(ctx, logger.LogLevelDebug, fmt.Sprintf("%s; Request email: %s;", logPrefix, req.Email))
+	appName := strings.TrimSpace(ctx.GetHeader("X-App-Name"))
+	if appName == "" {
+		appName = strings.TrimSpace(utils.GetEnv("OTP_APP_NAME", "Account Verification").(string))
+	}
+	logger.WriteLogWithContext(ctx, logger.LogLevelDebug, fmt.Sprintf("%s; Request email: %s; AppName: %s;", logPrefix, req.Email, appName))
 
-	err := h.Service.SendRegisterOTP(ctx.Request.Context(), req.Email)
+	err := h.Service.SendRegisterOTP(ctx.Request.Context(), req.Email, appName)
 	if err != nil {
 		logger.WriteLogWithContext(ctx, logger.LogLevelError, fmt.Sprintf("%s; Service.SendRegisterOTP error: %v", logPrefix, err))
 		if throttle := new(serviceotp.ThrottleError); errors.As(err, &throttle) {
