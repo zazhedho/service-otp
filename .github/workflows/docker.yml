@@ -9,8 +9,32 @@ permissions:
   contents: read
   packages: write
 
+env:
+  IMAGE_NAME: service-otp-api
+
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.filter.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            build:
+              - '**'
+              - '!README.md'
+              - '!**/*.md'
+              - '!.github/**'
+              - '!.env'
+              - '!.env.example'
+
   build:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.build == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,16 +52,24 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/service-otp:latest
-            ghcr.io/${{ github.repository_owner }}/service-otp:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
   deploy:
-    needs: build
-    if: ${{ secrets.VPS_HOST != '' }}
+    needs:
+      - detect-changes
+      - build
+    if: needs.detect-changes.outputs.build == 'true'
     runs-on: ubuntu-latest
     environment: Production
     steps:
+      - name: Skip deploy (missing secrets)
+        if: ${{ secrets.VPS_HOST == '' }}
+        run: echo "Skipping deploy: VPS secrets not configured."
+
       - name: Deploy to VPS
+        if: ${{ secrets.VPS_HOST != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
