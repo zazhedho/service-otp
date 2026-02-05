@@ -101,6 +101,7 @@ func main() {
 	}
 
 	routes.OTPRoutes()
+	routes.PasswordResetRoutes()
 
 	logger.WriteLog(logger.LogLevelInfo, "All routes registered successfully")
 

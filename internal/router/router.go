@@ -11,19 +11,23 @@ import (
 	menuHandler "service-otp/internal/handlers/http/menu"
 	otpHandler "service-otp/internal/handlers/http/otp"
 	permissionHandler "service-otp/internal/handlers/http/permission"
+	resetHandler "service-otp/internal/handlers/http/reset"
 	roleHandler "service-otp/internal/handlers/http/role"
 	sessionHandler "service-otp/internal/handlers/http/session"
 	userHandler "service-otp/internal/handlers/http/user"
+	interfacereset "service-otp/internal/interfaces/reset"
 	authRepo "service-otp/internal/repositories/auth"
 	menuRepo "service-otp/internal/repositories/menu"
 	otpRepo "service-otp/internal/repositories/otp"
 	permissionRepo "service-otp/internal/repositories/permission"
+	resetRepo "service-otp/internal/repositories/reset"
 	roleRepo "service-otp/internal/repositories/role"
 	sessionRepo "service-otp/internal/repositories/session"
 	userRepo "service-otp/internal/repositories/user"
 	menuSvc "service-otp/internal/services/menu"
 	otpSvc "service-otp/internal/services/otp"
 	permissionSvc "service-otp/internal/services/permission"
+	resetSvc "service-otp/internal/services/reset"
 	roleSvc "service-otp/internal/services/role"
 	sessionSvc "service-otp/internal/services/session"
 	userSvc "service-otp/internal/services/user"
@@ -215,6 +219,34 @@ func (r *Routes) OTPRoutes() {
 	{
 		otp.POST("/send", h.SendRegisterOTP)
 		otp.POST("/verify", h.VerifyRegisterOTP)
+	}
+}
+
+func (r *Routes) PasswordResetRoutes() {
+	redisClient := database.GetRedisClient()
+
+	sender, err := mailer.NewBrevoSenderFromEnv()
+	if err != nil {
+		logger.WriteLog(logger.LogLevelError, "Password reset sender not configured: "+err.Error())
+	}
+
+	cfg := config.LoadPasswordResetConfig()
+
+	var svc interfacereset.ServicePasswordResetInterface
+	if redisClient == nil {
+		logger.WriteLog(logger.LogLevelWarn, "Redis not available, password reset verify routes will not be registered")
+	} else {
+		repo := resetRepo.NewPasswordResetRepository(redisClient)
+		svc = resetSvc.NewPasswordResetService(repo, sender, cfg)
+	}
+
+	h := resetHandler.NewResetHandler(svc, sender, cfg)
+
+	reset := r.App.Group("/api/auth/reset-password")
+	{
+		reset.POST("/email", h.SendResetEmail)
+		reset.POST("/request", h.RequestReset)
+		reset.POST("/verify", h.VerifyReset)
 	}
 }
 
