@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"service-otp/pkg/logger"
-	"service-otp/utils"
+	"service-sender/pkg/logger"
+	"service-sender/utils"
 	"strings"
 	"time"
 

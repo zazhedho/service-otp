@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"service-otp/pkg/logger"
-	"service-otp/utils"
+	"service-sender/pkg/logger"
+	"service-sender/utils"
 	"time"
 
 	"github.com/redis/go-redis/v9"

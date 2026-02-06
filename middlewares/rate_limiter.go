@@ -10,10 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 
-	"service-otp/pkg/logger"
-	"service-otp/pkg/messages"
-	"service-otp/pkg/response"
-	"service-otp/utils"
+	"service-sender/pkg/logger"
+	"service-sender/pkg/messages"
+	"service-sender/pkg/response"
+	"service-sender/utils"
 )
 
 // IPRateLimitMiddleware applies a simple Redis-backed rate limit per client IP

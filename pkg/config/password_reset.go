@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"service-otp/utils"
+	"service-sender/utils"
 )
 
 type PasswordResetConfig struct {

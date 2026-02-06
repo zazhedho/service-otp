@@ -2,10 +2,10 @@ package repositoryrole
 
 import (
 	"fmt"
-	domainrole "service-otp/internal/domain/role"
-	interfacerole "service-otp/internal/interfaces/role"
-	"service-otp/pkg/filter"
-	"service-otp/utils"
+	domainrole "service-sender/internal/domain/role"
+	interfacerole "service-sender/internal/interfaces/role"
+	"service-sender/pkg/filter"
+	"service-sender/utils"
 
 	"gorm.io/gorm"
 )

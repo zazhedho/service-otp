@@ -1,8 +1,8 @@
 package interfacepermission
 
 import (
-	domainpermission "service-otp/internal/domain/permission"
-	"service-otp/pkg/filter"
+	domainpermission "service-sender/internal/domain/permission"
+	"service-sender/pkg/filter"
 )
 
 type RepoPermissionInterface interface {

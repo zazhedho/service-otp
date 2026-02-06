@@ -2,9 +2,9 @@ package media
 
 import (
 	"fmt"
-	"service-otp/pkg/logger"
-	"service-otp/pkg/storage"
-	"service-otp/utils"
+	"service-sender/pkg/logger"
+	"service-sender/pkg/storage"
+	"service-sender/utils"
 	"strconv"
 	"strings"
 )

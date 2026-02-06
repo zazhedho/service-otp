@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	interfacereset "service-otp/internal/interfaces/reset"
-	"service-otp/pkg/config"
-	"service-otp/pkg/mailer"
+	interfacereset "service-sender/internal/interfaces/reset"
+	"service-sender/pkg/config"
+	"service-sender/pkg/mailer"
 
 	"github.com/redis/go-redis/v9"
 )

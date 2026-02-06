@@ -2,7 +2,7 @@ package interfacesession
 
 import (
 	"context"
-	domainsession "service-otp/internal/domain/session"
+	domainsession "service-sender/internal/domain/session"
 	"time"
 )
 

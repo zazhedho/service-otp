@@ -10,13 +10,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"service-otp/internal/dto"
-	interfaceotp "service-otp/internal/interfaces/otp"
-	serviceotp "service-otp/internal/services/otp"
-	"service-otp/pkg/logger"
-	"service-otp/pkg/messages"
-	"service-otp/pkg/response"
-	"service-otp/utils"
+	"service-sender/internal/dto"
+	interfaceotp "service-sender/internal/interfaces/otp"
+	serviceotp "service-sender/internal/services/otp"
+	"service-sender/pkg/logger"
+	"service-sender/pkg/messages"
+	"service-sender/pkg/response"
+	"service-sender/utils"
 )
 
 type HandlerOTP struct {

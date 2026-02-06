@@ -1,6 +1,6 @@
 package interfaceauth
 
-import domainauth "service-otp/internal/domain/auth"
+import domainauth "service-sender/internal/domain/auth"
 
 type RepoAuthInterface interface {
 	Store(m domainauth.Blacklist) error

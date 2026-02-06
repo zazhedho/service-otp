@@ -1,9 +1,9 @@
 package interfacemenu
 
 import (
-	domainmenu "service-otp/internal/domain/menu"
-	"service-otp/internal/dto"
-	"service-otp/pkg/filter"
+	domainmenu "service-sender/internal/domain/menu"
+	"service-sender/internal/dto"
+	"service-sender/pkg/filter"
 )
 
 type ServiceMenuInterface interface {

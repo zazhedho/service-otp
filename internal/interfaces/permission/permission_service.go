@@ -1,9 +1,9 @@
 package interfacepermission
 
 import (
-	domainpermission "service-otp/internal/domain/permission"
-	"service-otp/internal/dto"
-	"service-otp/pkg/filter"
+	domainpermission "service-sender/internal/domain/permission"
+	"service-sender/internal/dto"
+	"service-sender/pkg/filter"
 )
 
 type ServicePermissionInterface interface {

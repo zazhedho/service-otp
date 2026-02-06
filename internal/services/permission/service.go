@@ -2,11 +2,11 @@ package servicepermission
 
 import (
 	"errors"
-	domainpermission "service-otp/internal/domain/permission"
-	"service-otp/internal/dto"
-	interfacepermission "service-otp/internal/interfaces/permission"
-	"service-otp/pkg/filter"
-	"service-otp/utils"
+	domainpermission "service-sender/internal/domain/permission"
+	"service-sender/internal/dto"
+	interfacepermission "service-sender/internal/interfaces/permission"
+	"service-sender/pkg/filter"
+	"service-sender/utils"
 	"time"
 )
 

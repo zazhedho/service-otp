@@ -2,9 +2,9 @@ package repositorymenu
 
 import (
 	"fmt"
-	domainmenu "service-otp/internal/domain/menu"
-	interfacemenu "service-otp/internal/interfaces/menu"
-	"service-otp/pkg/filter"
+	domainmenu "service-sender/internal/domain/menu"
+	interfacemenu "service-sender/internal/interfaces/menu"
+	"service-sender/pkg/filter"
 
 	"gorm.io/gorm"
 )

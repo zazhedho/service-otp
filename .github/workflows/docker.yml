@@ -1,4 +1,4 @@
-name: Build & Push Service OTP
+name: Build & Push Service Sender
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE_NAME: service-otp-api
+  IMAGE_NAME: service-sender-api
 
 jobs:
   detect-changes:
@@ -71,6 +71,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /opt/apps/service-otp
+            cd /opt/apps/service-sender
             docker compose pull
             docker compose up -d

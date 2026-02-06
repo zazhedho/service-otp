@@ -2,9 +2,9 @@ package repositoryuser
 
 import (
 	"fmt"
-	domainuser "service-otp/internal/domain/user"
-	interfaceuser "service-otp/internal/interfaces/user"
-	"service-otp/pkg/filter"
+	domainuser "service-sender/internal/domain/user"
+	interfaceuser "service-sender/internal/interfaces/user"
+	"service-sender/pkg/filter"
 
 	"gorm.io/gorm"
 )

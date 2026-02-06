@@ -1,4 +1,4 @@
-module service-otp
+module service-sender
 
 go 1.25
 

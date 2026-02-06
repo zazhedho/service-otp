@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"service-otp/pkg/logger"
+	"service-sender/pkg/logger"
 	"strings"
 	"time"
 
-	interfaceotp "service-otp/internal/interfaces/otp"
-	"service-otp/pkg/config"
-	"service-otp/pkg/mailer"
+	interfaceotp "service-sender/internal/interfaces/otp"
+	"service-sender/pkg/config"
+	"service-sender/pkg/mailer"
 
 	"github.com/redis/go-redis/v9"
 )

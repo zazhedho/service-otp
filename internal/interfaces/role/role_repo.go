@@ -1,8 +1,8 @@
 package interfacerole
 
 import (
-	domainrole "service-otp/internal/domain/role"
-	"service-otp/pkg/filter"
+	domainrole "service-sender/internal/domain/role"
+	"service-sender/pkg/filter"
 )
 
 type RepoRoleInterface interface {

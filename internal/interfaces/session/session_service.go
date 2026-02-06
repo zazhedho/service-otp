@@ -3,8 +3,8 @@ package interfacesession
 import (
 	"context"
 
-	domainsession "service-otp/internal/domain/session"
-	domainuser "service-otp/internal/domain/user"
+	domainsession "service-sender/internal/domain/session"
+	domainuser "service-sender/internal/domain/user"
 
 	"github.com/gin-gonic/gin"
 )
